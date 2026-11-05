@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111317">
+<title>THE ARCHIVIST — Warhammer Lore Intelligence</title>
+<style>
+:root{--bg:#101216;--panel:#191d23;--panel2:#202630;--line:#343b46;--text:#eee9dc;--muted:#a9a99f;--gold:#c6a45a;--red:#8e3434;--green:#8ca78b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#252a32 0,#101216 55%);color:var(--text);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+header{padding:22px 18px 16px;border-bottom:1px solid var(--line);background:#111419eF;position:sticky;top:0;z-index:5;backdrop-filter:blur(12px)}
+.brand{display:flex;align-items:center;gap:13px}.sigil{width:45px;height:45px;border:1px solid var(--gold);border-radius:50%;display:grid;place-items:center;color:var(--gold);font-size:24px}
+h1{font:700 20px/1.1 Georgia,serif;letter-spacing:2px;margin:0;color:#e4d3a7}header p{margin:5px 0 0;color:var(--muted);font-size:12px;letter-spacing:1px}
+main{max-width:900px;margin:auto;padding:18px 14px 36px}.notice{border:1px solid #685735;background:#30291d;border-radius:10px;padding:12px 14px;color:#e8d6ae;font-size:13px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}.field label{display:block;color:var(--gold);font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+select,input,textarea{width:100%;background:#11151a;color:var(--text);border:1px solid #414955;border-radius:8px;padding:11px;font:inherit}textarea{min-height:110px;resize:vertical}
+.chat{margin-top:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}.chathead{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;color:var(--gold);font-size:12px;letter-spacing:1px}
+.messages{padding:14px;min-height:210px;max-height:44vh;overflow:auto}.msg{padding:12px 13px;border-radius:10px;margin:0 0 10px;white-space:pre-wrap;overflow-wrap:anywhere}.bot{background:#242b34;border-left:3px solid var(--gold)}.user{background:#302820;border-left:3px solid var(--red);margin-left:9%}.small{font-size:12px;color:var(--muted)}
+.composer{padding:12px;border-top:1px solid var(--line);display:grid;gap:9px}.buttons{display:flex;gap:8px;flex-wrap:wrap}
+button{border:1px solid #6e5b35;background:#4a3a20;color:#fff0cf;border-radius:8px;padding:11px 14px;font-weight:650;font-size:14px;cursor:pointer}
+button.secondary{background:#222831;border-color:#48515d;color:var(--text)}button.danger{background:#382323;border-color:#754444}
+button:active{transform:scale(.99)}
+.result{margin-top:14px;display:none}.result h2,.sources h2{font:700 15px Georgia,serif;color:var(--gold);letter-spacing:1px}
+.promptbox{background:#0c0f13;border:1px solid var(--line);border-radius:10px;padding:12px;white-space:pre-wrap;font-size:13px;max-height:360px;overflow:auto}
+.sources{margin-top:18px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}.sourcegrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.source{display:block;text-decoration:none;color:var(--text);background:#222831;border:1px solid var(--line);border-radius:9px;padding:11px}.source b{display:block;color:#e5d2a3}.source span{font-size:11px;color:var(--muted)}
+footer{color:var(--muted);font-size:11px;text-align:center;padding:22px 10px}
+@media(max-width:560px){.grid,.sourcegrid{grid-template-columns:1fr}.messages{max-height:40vh}header{padding-top:16px}}
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="sigil">✠</div><div><h1>THE ARCHIVIST</h1><p>WARHAMMER 40,000 · THE HORUS HERESY</p></div></div></header>
+<main>
+<div class="notice"><b>Lokale iPad-Version · kostenlos</b><br>Diese erste Ausgabe erstellt präzise Recherche- und Analyseaufträge und öffnet passende Suchseiten der zugelassenen Quellen. Sie behauptet nicht, selbst ein KI-Modell oder eine vollständige Lore-Datenbank zu sein.</div>
+
+<div class="grid">
+ <div class="field"><label for="universe">Universum</label><select id="universe"><option>Beide: Warhammer 40K & Horus Heresy</option><option>Warhammer 40.000</option><option>The Horus Heresy</option></select></div>
+ <div class="field"><label for="mode">Analysemodus</label><select id="mode"><option>Tiefenanalyse / Lore-Recherche</option><option>Charakteranalyse</option><option>Fraktions- oder Legionenvergleich</option><option>Chronologie / Ereignisablauf</option><option>Schlacht- und Militäranalyse</option><option>Technologie / Waffen / Ausrüstung</option><option>Kanonprüfung / Quellenkonflikt</option></select></div>
+ <div class="field"><label for="depth">Detailgrad</label><select id="depth"><option>Maximal – sehr ausführlich</option><option>Ausführlich</option><option>Kompakt</option></select></div>
+ <div class="field"><label for="certainty">Umgang mit Unsicherheit</label><select id="certainty"><option>Streng: jede Aussage belegen</option><option>Normal: Fakten und Deutungen trennen</option></select></div>
+</div>
+
+<section class="chat">
+ <div class="chathead"><span>◆ ARCHIV-KONSOLE</span><span id="status">BEREIT</span></div>
+ <div class="messages" id="messages"><div class="msg bot">Willkommen im Archiv, Bruder.\n\nDas 31. und 41. Jahrtausend stehen dir offen. Welche Geheimnisse des Imperiums, der Primarchen oder des Chaos sollen wir untersuchen?\n\nStelle eine Frage. Ich erstelle daraus einen Rechercheauftrag mit Quellenbeschränkung und passenden Suchlinks.</div></div>
+ <div class="composer">
+  <textarea id="question" placeholder="Zum Beispiel: Vergleiche Lion El’Jonson und Sanguinius während der Horus-Häresie. Berücksichtige belegte Leistungen, Ausrüstung und Quellenkonflikte."></textarea>
+  <div class="buttons"><button id="generate">Rechercheauftrag erstellen</button><button class="secondary" id="clear">Chat leeren</button></div>
+ </div>
+</section>
+
+<section class="result" id="result">
+ <h2>GENERIERTER ARCHIV-AUFTRAG</h2>
+ <p class="small">Kopiere diesen Auftrag in ein KI-System deiner Wahl. Prüfe dort, ob die Antworten tatsächlich mit den zugelassenen Quellen belegt werden.</p>
+ <div class="promptbox" id="prompt"></div>
+ <div class="buttons" style="margin-top:10px"><button id="copy">Auftrag kopieren</button><button class="secondary" id="search">Quellen-Suchen öffnen</button></div>
+</section>
+
+<section class="sources">
+ <h2>ZUGELASSENE QUELLEN</h2>
+ <div class="sourcegrid">
+  <a class="source" href="https://wh40k.lexicanum.com/" target="_blank" rel="noopener"><b>Lexicanum</b><span>Warhammer-Lore-Enzyklopädie</span></a>
+  <a class="source" href="https://warhammer40k.fandom.com/wiki/Warhammer_40k_Wiki" target="_blank" rel="noopener"><b>Warhammer 40k Wiki</b><span>Fan-Wiki / ergänzende Übersicht</span></a>
+  <a class="source" href="https://www.blacklibrary.com/" target="_blank" rel="noopener"><b>Black Library</b><span>Romane und Kurzgeschichten</span></a>
+  <a class="source" href="https://www.warhammer.com/" target="_blank" rel="noopener"><b>Games Workshop</b><span>Offizielle Produkt- und Hintergrundseiten</span></a>
+  <a class="source" href="https://www.warhammer-community.com/" target="_blank" rel="noopener"><b>Warhammer Community</b><span>Offizielle Artikel und Neuigkeiten</span></a>
+ </div>
+ <p class="small">Quellenhierarchie: Primärtexte und offizielle GW-Veröffentlichungen bevorzugen. Lexicanum und Wiki als Sekundärquellen kennzeichnen. Bei Widersprüchen mehrere Darstellungen nennen; keine Fan-Theorie als gesicherten Kanon ausgeben.</p>
+</section>
+<footer>THE ARCHIVIST · Fan-Projekt, nicht mit Games Workshop verbunden · Warhammer ist eine Marke von Games Workshop.</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let lastPrompt="",lastQuestion="";
+function addMessage(text,who){const d=document.createElement("div");d.className="msg "+who;d.textContent=text;$("messages").appendChild(d);$("messages").scrollTop=$("messages").scrollHeight;}
+function makePrompt(q){
+ const u=$("universe").value,m=$("mode").value,d=$("depth").value,c=$("certainty").value;
+ return `Du bist THE ARCHIVIST, ein spezialisierter Lore-Analyst für Warhammer 40.000 und The Horus Heresy.\n\nNUTZERFRAGE:\n${q}\n\nRAHMEN:\n- Universum: ${u}\n- Analysemodus: ${m}\n- Detailgrad: ${d}\n- Belegstandard: ${c}\n\nVERBINDLICHE QUELLENBESCHRÄNKUNG:\nVerwende ausschließlich diese Quellen: (1) https://wh40k.lexicanum.com/ (2) https://warhammer40k.fandom.com/wiki/Warhammer_40k_Wiki (3) https://www.blacklibrary.com/ (4) https://www.warhammer.com/ (5) https://www.warhammer-community.com/ . Keine anderen Webseiten, Foren, Videos, Wikipedia, Reddit oder sonstige Quellen. Wenn du keinen Zugriff auf eine Quelle hast, behaupte nicht, sie geprüft zu haben.\n\nARBEITSWEISE:\n1. Recherchiere die Frage gründlich und beantworte sie auf Deutsch.\n2. Bevorzuge offizielle Games-Workshop-Veröffentlichungen und Black-Library-Primärtexte. Nutze Lexicanum und Warhammer Wiki ergänzend und kennzeichne sie als Sekundärquellen.\n3. Belege konkrete Aussagen mit nachvollziehbaren Quellenlinks. Nenne bei Romanen, soweit bekannt, Titel, Autor und Reihe. Erfinde niemals Seitenzahlen, Zitate, Buchstellen oder URLs.\n4. Trenne strikt: [GESICHERT] belegte Information; [UMSTRITTEN] widersprüchliche Quellen; [UNBESTÄTIGT] nicht ausreichend belegt; [THEORIE] eigene Interpretation.\n5. Beachte unzuverlässige Erzähler, imperiale Propaganda, Retcons und unterschiedliche Perspektiven. Vermische nicht Ereignisse des 31. und 41. Jahrtausends.\n6. Wenn Quellen fehlen oder nicht erreichbar sind, sage offen: „Das kann ich anhand der zugelassenen Quellen nicht zuverlässig bestätigen.“ Keine Lücken mit erfundenem Lore füllen.\n7. Beende die Antwort mit einer kurzen Quellenliste, die nur tatsächlich verwendete und überprüfte Quellen enthält.\n\nQUALITÄTSREGEL: Keine unbelegten Power-Scaling-Aussagen, keine Fanon-Behauptungen als Kanon, keine erfundenen Details. Bei Vergleichen Kriterien einzeln bewerten und ein begründetes Fazit geben.`;
+}
+function searchLinks(q){
+ const e=encodeURIComponent(q);
+ const urls=[
+  "https://wh40k.lexicanum.com/index.php?search="+e,
+  "https://warhammer40k.fandom.com/wiki/Special:Search?query="+e,
+  "https://www.google.com/search?q="+encodeURIComponent("site:blacklibrary.com "+q),
+  "https://www.google.com/search?q="+encodeURIComponent("site:warhammer.com OR site:warhammer-community.com "+q)
+ ];
+ urls.forEach((url)=>window.open(url,"_blank","noopener"));
+}
+$("generate").addEventListener("click",()=>{
+ const q=$("question").value.trim();if(!q){$("question").focus();return;}
+ lastQuestion=q;lastPrompt=makePrompt(q);
+ addMessage(q,"user");
+ addMessage("Archiv-Auftrag erstellt. Ich habe die Recherche auf die fünf zugelassenen Quellen begrenzt. Der folgende Prompt ist für eine externe KI gedacht; diese App selbst erfindet keine Lore-Antworten.","bot");
+ $("prompt").textContent=lastPrompt;$("result").style.display="block";$("status").textContent="AUFTRAG BEREIT";
+});
+$("copy").addEventListener("click",async()=>{
+ try{await navigator.clipboard.writeText(lastPrompt);$("copy").textContent="Kopiert ✓";}
+ catch(e){const t=document.createElement("textarea");t.value=lastPrompt;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove();$("copy").textContent="Kopiert ✓";}
+ setTimeout(()=>$("copy").textContent="Auftrag kopieren",1600);
+});
+$("search").addEventListener("click",()=>{if(lastQuestion)searchLinks(lastQuestion);});
+$("clear").addEventListener("click",()=>{$("messages").innerHTML="";$("result").style.display="none";$("question").value="";lastPrompt="";lastQuestion="";$("status").textContent="BEREIT";addMessage("Archiv geleert. Welche Frage untersuchen wir als Nächstes?","bot");});
+$("question").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();$("generate").click();}});
+</script>
+</body>
+</html>
