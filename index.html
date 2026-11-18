@@ -69,7 +69,162 @@ footer{color:var(--muted);font-size:11px;text-align:center;padding:22px 10px}
 <footer>THE ARCHIVIST · Fan-Projekt, nicht mit Games Workshop verbunden · Warhammer ist eine Marke von Games Workshop.</footer>
 </main>
 <script>
-const $=id=>document.getElementById(id);
+
+const $ = id => document.getElementById(id);
+
+const API_URL = "https://the-archivist-api.janis-noah.workers.dev";
+
+let lastAnswer = "";
+let lastQuestion = "";
+
+function addMessage(text, who) {
+  const d = document.createElement("div");
+  d.className = "msg " + who;
+  d.textContent = text;
+  $("messages").appendChild(d);
+  $("messages").scrollTop = $("messages").scrollHeight;
+}
+
+function searchLinks(q) {
+  const e = encodeURIComponent(q);
+  const urls = [
+    "https://wh40k.lexicanum.com/index.php?search=" + e,
+    "https://warhammer40k.fandom.com/wiki/Special:Search?query=" + e,
+    "https://www.google.com/search?q=" +
+      encodeURIComponent("site:blacklibrary.com " + q),
+    "https://www.google.com/search?q=" +
+      encodeURIComponent(
+        "site:warhammer.com OR site:warhammer-community.com " + q
+      )
+  ];
+
+  urls.forEach(url => window.open(url, "_blank", "noopener"));
+}
+
+async function sendQuestion() {
+  const question = $("question").value.trim();
+
+  if (!question) {
+    $("question").focus();
+    return;
+  }
+
+  lastQuestion = question;
+
+  const button = $("generate");
+  button.disabled = true;
+  button.textContent = "ARCHIV WIRD DURCHSUCHT...";
+  $("status").textContent = "ANALYSE LÄUFT";
+
+  addMessage(question, "user");
+  $("question").value = "";
+
+  const loading = document.createElement("div");
+  loading.className = "msg bot";
+  loading.textContent = "Der Archivist analysiert deine Anfrage...";
+  $("messages").appendChild(loading);
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        question: question,
+        universe: $("universe").value,
+        mode: $("mode").value,
+        depth: $("depth").value,
+        certainty: $("certainty").value
+      })
+    });
+
+    const data = await response.json();
+
+    loading.remove();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Serverfehler " + response.status);
+    }
+
+    if (!data.answer) {
+      throw new Error("Der Archivist hat keine Antwort zurückgegeben.");
+    }
+
+    lastAnswer = data.answer;
+
+    addMessage(data.answer, "bot");
+
+    $("prompt").textContent = data.answer;
+    $("result").style.display = "block";
+    $("result").querySelector("h2").textContent =
+      "ANTWORT DES ARCHIVISTEN";
+
+    $("result").querySelector("p").textContent =
+      "KI-generierte Lore-Analyse. Quellenangaben bitte anhand der zugelassenen Quellen überprüfen.";
+
+    $("status").textContent = "ANTWORT ERHALTEN";
+
+  } catch (error) {
+    loading.remove();
+
+    addMessage(
+      "FEHLER: " + error.message +
+      "\n\nBitte überprüfe die Verbindung zum Archiv-Server.",
+      "bot"
+    );
+
+    $("status").textContent = "VERBINDUNGSFEHLER";
+
+  } finally {
+    button.disabled = false;
+    button.textContent = "Frage an THE ARCHIVIST senden";
+  }
+}
+
+$("generate").addEventListener("click", sendQuestion);
+
+$("copy").addEventListener("click", async () => {
+  if (!lastAnswer) return;
+
+  try {
+    await navigator.clipboard.writeText(lastAnswer);
+    $("copy").textContent = "Kopiert ✓";
+  } catch (error) {
+    $("copy").textContent = "Kopieren nicht möglich";
+  }
+
+  setTimeout(() => {
+    $("copy").textContent = "Auftrag kopieren";
+  }, 1600);
+});
+
+$("search").addEventListener("click", () => {
+  if (lastQuestion) searchLinks(lastQuestion);
+});
+
+$("clear").addEventListener("click", () => {
+  $("messages").innerHTML = "";
+  $("result").style.display = "none";
+  $("question").value = "";
+  lastAnswer = "";
+  lastQuestion = "";
+  $("status").textContent = "BEREIT";
+
+  addMessage(
+    "Archiv geleert. Welche Frage sollen wir untersuchen?",
+    "bot"
+  );
+});
+
+$("question").addEventListener("keydown", event => {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    sendQuestion();
+  }
+});
+</script>
+
 let lastPrompt="",lastQuestion="";
 function addMessage(text,who){const d=document.createElement("div");d.className="msg "+who;d.textContent=text;$("messages").appendChild(d);$("messages").scrollTop=$("messages").scrollHeight;}
 function makePrompt(q){
